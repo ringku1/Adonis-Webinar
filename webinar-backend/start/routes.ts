@@ -1,0 +1,6 @@
+import router from '@adonisjs/core/services/router'
+const WebinarController = () => import('#controllers/webinars_controller')
+
+router.post('/webinar/create', [WebinarController, 'create'])
+router.post('/webinar/:webinarId/register_participant', [WebinarController, 'registerParticipant'])
+router.get('/participants', [WebinarController, 'getAllParticipants'])

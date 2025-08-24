@@ -1,0 +1,104 @@
+.container {
+  max-width: 450px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+}
+
+input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 600;
+  color: #007bff;
+}
+
+/* Join URL Box */
+.joinBox {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e9f5ff;
+  border: 1px solid #b3daff;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.joinBox p {
+  margin-bottom: 10px;
+  color: #004085;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.joinBox a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.joinBox a:hover {
+  text-decoration: underline;
+}
+
+.copyButton {
+  padding: 8px 15px;
+  background-color: #28a745;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.copyButton:hover {
+  background-color: #218838;
+}
