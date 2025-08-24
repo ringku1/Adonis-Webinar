@@ -7,9 +7,22 @@ export default class WebinarController {
   // Create a new webinar
   async create(ctx: HttpContext) {
     let data = ctx.request.only(['topic', 'agenda', 'start_time'])
+    //validate start time is in future
+
+    const startTime = new Date(data.start_time).getTime()
+    const now = Date.now()
+
+    // Require start time to be at least 1 minute ahead
+    if (startTime <= now + 60 * 1000) {
+      return { message: 'Start time must be at least 1 minute in the future' }
+    }
     const cf_meeting_id = process.env.cf_meeting_id
     const webinar = await Webinar.create({ ...data, cf_meeting_id })
-    return { message: 'Meeting Created successfully', webinar }
+    //get webinar ID
+    const webinarId = webinar.id
+    const joinUrl = `http://localhost:3000/register/${webinarId}`
+
+    return { message: 'Meeting Created successfully', webinar, joinUrl }
   }
 
   // register a participant for a webinar

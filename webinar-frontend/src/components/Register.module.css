@@ -41,6 +41,7 @@ input:focus {
 }
 
 button {
+  width: 100%;
   padding: 12px;
   background-color: #007bff;
   color: white;
@@ -50,6 +51,8 @@ button {
   border-radius: 6px;
   cursor: pointer;
   transition: 0.3s;
+  display: block; /* Make button a block element */
+  margin: 0 auto; /* Center it horizontally */
 }
 
 button:hover {
