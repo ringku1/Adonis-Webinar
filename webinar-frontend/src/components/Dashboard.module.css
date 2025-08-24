@@ -69,3 +69,16 @@ button:hover {
 .registerForm button:hover {
   background-color: #218838;
 }
+.message.success {
+  color: green;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.message.error {
+  color: red;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 600;
+}

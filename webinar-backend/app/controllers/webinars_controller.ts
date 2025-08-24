@@ -16,7 +16,6 @@ export default class WebinarController {
     //create webinar
     const cf_meeting_id = process.env.cf_meeting_id
     const webinar = await Webinar.create({ ...data, cf_meeting_id })
-    console.log(webinar)
     //get webinar ID
     const webinarId = webinar.id
     const joinUrl = `http://localhost:3000/register/${webinarId}`

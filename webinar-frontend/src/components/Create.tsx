@@ -69,7 +69,6 @@ const Create: React.FC = () => {
               const selectedTime = new Date(e.target.value).getTime();
               const minAllowedTime = Date.now() + 60 * 1000; // 1 minute ahead
               setStartTime(e.target.value);
-              console.log(startTime);
             }}
             required
             min={local}
@@ -78,8 +77,15 @@ const Create: React.FC = () => {
 
         <button type="submit">Create</button>
       </form>
-
-      {message && <p className={styles.message}>{message}</p>}
+      {message && (
+        <p
+          className={`${styles.message} ${
+            message.includes("success") ? styles.success : styles.error
+          }`}
+        >
+          {message}
+        </p>
+      )}
 
       {joinUrl && (
         <div className={styles.joinBox}>

@@ -20,7 +20,7 @@ const Register: React.FC = () => {
     try {
       const res = await axios.post(
         `http://localhost:3333/webinar/${webinarId}/register_participant`,
-        { name, email }
+        { name: name, email: email }
       );
       setMessage(res.data.message);
       if (res.data.joinUrl) {
@@ -62,8 +62,15 @@ const Register: React.FC = () => {
         </div>
         <button type="submit">Register</button>
       </form>
-
-      {message && <p className={styles.message}>{message}</p>}
+      {message && (
+        <p
+          className={`${styles.message} ${
+            message.includes("success") ? styles.success : styles.error
+          }`}
+        >
+          {message}
+        </p>
+      )}
 
       {joinUrl && (
         <div className={styles.joinBox}>
