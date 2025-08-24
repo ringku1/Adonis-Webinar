@@ -7,17 +7,16 @@ export default class WebinarController {
   // Create a new webinar
   async create(ctx: HttpContext) {
     let data = ctx.request.only(['topic', 'agenda', 'start_time'])
-    //validate start time is in future
-
+    //date validation
     const startTime = new Date(data.start_time).getTime()
-    const now = Date.now()
-
-    // Require start time to be at least 1 minute ahead
-    if (startTime <= now + 60 * 1000) {
-      return { message: 'Start time must be at least 1 minute in the future' }
+    const currentTime = Date.now()
+    if (isNaN(startTime) || startTime <= currentTime) {
+      return { message: 'Start time must be a valid future date' }
     }
+    //create webinar
     const cf_meeting_id = process.env.cf_meeting_id
     const webinar = await Webinar.create({ ...data, cf_meeting_id })
+    console.log(webinar)
     //get webinar ID
     const webinarId = webinar.id
     const joinUrl = `http://localhost:3000/register/${webinarId}`

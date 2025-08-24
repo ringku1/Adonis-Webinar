@@ -9,14 +9,17 @@ const Create: React.FC = () => {
   const [startTime, setStartTime] = useState("");
   const [joinUrl, setJoinUrl] = useState("");
   const [message, setMessage] = useState("");
-
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await axios.post(`http://localhost:3333/webinar/create`, {
-        topic,
-        agenda,
-        startTime,
+        topic: topic,
+        agenda: agenda,
+        start_time: startTime,
       });
       setMessage(res.data.message);
       if (res.data.joinUrl) {
@@ -65,18 +68,11 @@ const Create: React.FC = () => {
             onChange={(e) => {
               const selectedTime = new Date(e.target.value).getTime();
               const minAllowedTime = Date.now() + 60 * 1000; // 1 minute ahead
-
-              if (selectedTime <= minAllowedTime) {
-                alert(
-                  "Meeting should be in the future (at least 1 minute ahead)"
-                );
-                setStartTime(""); // clear the invalid value
-              } else {
-                setStartTime(e.target.value);
-              }
+              setStartTime(e.target.value);
+              console.log(startTime);
             }}
-            min={new Date(Date.now() + 60 * 1000).toISOString().slice(0, 16)}
             required
+            min={local}
           />
         </div>
 
