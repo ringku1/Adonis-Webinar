@@ -27,6 +27,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      <h2>Welcome to the Webinar Platform</h2>
       <h2>Dashboard</h2>
       <div className={styles.buttons}>
         <button onClick={handleCreateWebinar}>Create Webinar</button>

@@ -7,7 +7,7 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('name').notNullable()
-      table.string('email').notNullable().unique()
+      table.string('email').notNullable().unique() // ensure email is unique per webinar
       table.string('token').notNullable()
       table.integer('webinar_id').unsigned().references('id').inTable('webinars')
       table.enum('login_type', ['registered', 'guest']).notNullable().defaultTo('guest')
