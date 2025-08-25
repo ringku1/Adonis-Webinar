@@ -43,7 +43,7 @@ const Register: React.FC = () => {
       <h2>Register for Webinar</h2>
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
-          <label>Name</label>
+          <label>Full Name</label>
           <input
             type="text"
             value={name}
