@@ -111,4 +111,18 @@ export default class WebinarController {
       return ctx.response.status(401).json({ message: 'Invalid or expired token' })
     }
   }
+
+  async getMeetingDetails(ctx: HttpContext) {
+    const webinarId = ctx.params.webinarId
+    if (!webinarId) {
+      return ctx.response.status(400).json({ message: 'webinarId is required' })
+    }
+
+    const webinar = await Webinar.find(webinarId)
+    if (!webinar) {
+      return ctx.response.status(404).json({ message: 'Webinar not found' })
+    }
+
+    return ctx.response.json({ message: 'Webinar is ready', webinar })
+  }
 }

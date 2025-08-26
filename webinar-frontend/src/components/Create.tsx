@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+//import { useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "./Register.module.css";
-import { isDate } from "util/types";
+//import { isDate } from "util/types";
 
 const Create: React.FC = () => {
   const [topic, setTopic] = useState("");
@@ -31,7 +31,7 @@ const Create: React.FC = () => {
       setStartTime("");
     } catch (err: any) {
       setMessage(err.response?.data?.message || "Error occurred");
-      console.log(startTime);
+      //console.log(startTime);
     }
   };
 
@@ -71,6 +71,7 @@ const Create: React.FC = () => {
               const selectedTime = new Date(e.target.value).getTime();
               const minAllowedTime = Date.now() + 60 * 1000; // 1 minute ahead
               setStartTime(e.target.value);
+              console.log(startTime);
             }}
             required
             min={local}
