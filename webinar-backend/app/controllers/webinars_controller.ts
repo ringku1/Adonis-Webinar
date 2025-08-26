@@ -10,7 +10,6 @@ export default class WebinarController {
     try {
       // Validate the request body using webinarSchema
       const data = ctx.request.only(['topic', 'agenda', 'start_time'])
-      console.log(data.start_time)
       const validatedData = await createCreateWebinarValidator.validate(data)
 
       // create webinar

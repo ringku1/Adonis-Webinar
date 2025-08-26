@@ -29,7 +29,7 @@ const Register: React.FC = () => {
       setName("");
       setEmail("");
     } catch (err: any) {
-      setMessage(err.response?.data?.message || "Error occurred");
+      setMessage(err.response?.data?.message[0]?.message || "Error occurred");
     }
   };
 

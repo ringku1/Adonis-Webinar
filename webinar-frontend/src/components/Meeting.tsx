@@ -120,6 +120,15 @@ const Meeting: React.FC = () => {
           <h4>Redirecting to the Webinar...</h4>
         </div>
       )}
+      {status === "failed" && (
+        <div>
+          <button
+            onClick={() => (window.location.href = `/register/${webinarId}`)}
+          >
+            Go Back to Registration Page
+          </button>
+        </div>
+      )}
     </div>
   );
 };
