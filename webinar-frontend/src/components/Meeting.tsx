@@ -2,8 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styles from "./Register.module.css";
 import axios from "axios";
+import {
+  RealtimeKitProvider,
+  useRealtimeKitClient,
+} from "@cloudflare/realtimekit-react";
+import { defaultConfig, RtkMeeting } from "@cloudflare/realtimekit-react-ui";
 
 const Meeting: React.FC = () => {
+  const [meeting, initMeeting] = useRealtimeKitClient();
+
   const [searchParams] = useSearchParams();
   const webinarId = searchParams.get("webinarId") as string;
   const token = searchParams.get("jwt") as string;
@@ -13,6 +20,64 @@ const Meeting: React.FC = () => {
     "verifying"
   );
   const [message, setMessage] = useState("");
+  const [meetingInitialized, setMeetingInitialized] = useState(false);
+  const [participant, setParticipant] = useState<any>(null);
+
+  function stopScreenShare() {
+    if (!meeting) return;
+    meeting.self.disableScreenShare();
+  }
+
+  // Initialize RTK Meeting using backend API
+  const initializeRTKMeeting = async (webinarData: any) => {
+    try {
+      if (!participant || meetingInitialized) return;
+      
+      setMessage('Joining meeting...');
+      
+      // Call backend API to get Cloudflare meeting credentials
+      const joinResponse = await axios.post(
+        `http://localhost:3333/webinar/${webinarId}/join`,
+        {
+          name: participant.name,
+          email: participant.email,
+        }
+      );
+
+      if (joinResponse.data.status === 'joined') {
+        const { meeting_data } = joinResponse.data;
+        
+        console.log('Meeting data received:', meeting_data);
+        
+        // Initialize RTK meeting with credentials from Cloudflare
+        const meetingConfig = {
+          // The meeting_data contains the Cloudflare response
+          sessionId: meeting_data.sessionId || webinarData.cf_meeting_id,
+          // Use the session token from Cloudflare response
+          sessionToken: meeting_data.sessionToken,
+          // Participant info
+          participantName: participant.name,
+          participantId: joinResponse.data.participant.cloudflare_participant_id,
+          // Any additional Cloudflare config from the response
+          ...meeting_data,
+        };
+        
+        console.log('Initializing meeting with config:', meetingConfig);
+        
+        await initMeeting(meetingConfig);
+
+        setMeetingInitialized(true);
+        setMessage('Successfully joined the meeting!');
+      } else {
+        throw new Error(joinResponse.data.message || 'Failed to join meeting');
+      }
+    } catch (error: any) {
+      console.error('Failed to initialize RTK meeting:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to join meeting. Please try again.';
+      setMessage(errorMessage);
+      // Don't set status to failed, let user retry
+    }
+  };
 
   // Token verification with timeout
   useEffect(() => {
@@ -36,6 +101,8 @@ const Meeting: React.FC = () => {
         setMessage(res.data.message);
 
         if (res.data.message.includes("Token is valid")) {
+          // Store participant data
+          setParticipant(res.data.participant);
           // Delay before marking as verified
           setTimeout(() => {
             setStatus("verified");
@@ -63,7 +130,46 @@ const Meeting: React.FC = () => {
         const res = await axios.get(
           `http://localhost:3333/meeting/${webinarId}`
         );
-        const meetingStartTime = new Date(res.data.webinar.startTime);
+
+        console.log("Meeting details response:", res.data.webinar);
+
+        // Handle different start_time formats from backend
+        let meetingStartTime: Date;
+        const startTimeData = res.data.webinar.start_time;
+
+        if (typeof startTimeData === "string") {
+          meetingStartTime = new Date(startTimeData);
+        } else if (startTimeData && typeof startTimeData === "object") {
+          // Handle Luxon DateTime object
+          if (startTimeData.toISO) {
+            meetingStartTime = new Date(startTimeData.toISO());
+          } else if (startTimeData.toJSDate) {
+            meetingStartTime = startTimeData.toJSDate();
+          } else {
+            // Try to convert object to string first
+            meetingStartTime = new Date(String(startTimeData));
+          }
+        } else {
+          meetingStartTime = new Date(startTimeData);
+        }
+
+        console.log("Parsed meeting start time:", meetingStartTime);
+
+        // Validate the parsed date
+        if (isNaN(meetingStartTime.getTime())) {
+          console.error("Invalid date parsed from start_time:", startTimeData);
+          console.error("Raw start_time type:", typeof startTimeData);
+          console.error("Raw start_time value:", startTimeData);
+
+          // Fallback: assume meeting has started if we can't parse the date
+          console.warn("Cannot parse start time, assuming meeting has started");
+          setStartTime(new Date()); // Use current time as fallback
+          setTimeout(() => {
+            setStarted(true);
+          }, 1000);
+          return;
+        }
+
         setStartTime(meetingStartTime);
 
         // Check if meeting has already started
@@ -115,9 +221,50 @@ const Meeting: React.FC = () => {
 
       {status === "verified" && started && (
         <div className={styles.meetingStarted}>
-          <div className={styles.joinLoader}></div>
-          <h3>Webinar has started!</h3>
-          <h4>Redirecting to the Webinar...</h4>
+          {!meetingInitialized && !meeting ? (
+            <>
+              <h3>🎉 Webinar has started!</h3>
+              <p>You can now join the meeting.</p>
+              <button
+                className={styles.joinButton}
+                onClick={() =>
+                  initializeRTKMeeting({ cf_meeting_id: webinarId })
+                }
+                disabled={message.includes("Joining meeting...")}
+              >
+                {message.includes("Joining meeting...") ? (
+                  <>
+                    <div className={styles.buttonLoader}></div>
+                    Joining...
+                  </>
+                ) : (
+                  "Join Meeting"
+                )}
+              </button>
+            </>
+          ) : meetingInitialized && meeting ? (
+            <div className={styles.meetingContainer}>
+              <h3>Welcome to the Webinar!</h3>
+              <RealtimeKitProvider value={meeting}>
+                <RtkMeeting meeting={meeting} config={defaultConfig} />
+              </RealtimeKitProvider>
+            </div>
+          ) : (
+            <div>
+              <div className={styles.joinLoader}></div>
+              <p>Connecting to meeting...</p>
+              {message.includes("Failed") && (
+                <button
+                  className={styles.retryButton}
+                  onClick={() =>
+                    initializeRTKMeeting({ cf_meeting_id: webinarId })
+                  }
+                >
+                  Retry
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
       {status === "failed" && (

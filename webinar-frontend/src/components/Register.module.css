@@ -8,6 +8,14 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Meeting view gets full width */
+.container:has(.meetingContainer) {
+  max-width: 95vw;
+  height: 95vh;
+  margin: 2.5vh auto;
+  padding: 20px;
+}
+
 h2 {
   text-align: center;
   margin-bottom: 25px;
@@ -180,4 +188,97 @@ button:hover {
 
 .meeting-started button:hover {
   background: #218838;
+}
+
+.meetingContainer {
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.meetingContainer h3 {
+  color: #28a745;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Join Meeting Button */
+.joinButton {
+  background: #28a745 !important;
+  color: white;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.joinButton:hover:not(:disabled) {
+  background: #218838 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.joinButton:disabled {
+  background: #6c757d !important;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Button loader */
+.buttonLoader {
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* Retry button */
+.retryButton {
+  background: #dc3545 !important;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.retryButton:hover {
+  background: #c82333 !important;
+}
+
+/* Responsive design for different screen sizes */
+@media (max-width: 768px) {
+  .meetingContainer {
+    height: 70vh;
+    min-height: 400px;
+  }
+  
+  .container:has(.meetingContainer) {
+    max-width: 98vw;
+    margin: 1vh auto;
+    padding: 10px;
+  }
+  
+  .joinButton {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+  }
 }

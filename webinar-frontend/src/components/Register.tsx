@@ -60,7 +60,7 @@ const Register: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Register & Join</button>
       </form>
       {message && (
         <p
