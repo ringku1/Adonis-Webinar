@@ -228,6 +228,9 @@ export default class WebinarController {
         }
       )
 
+      // Debug: Log the Cloudflare response structure
+      console.log('Cloudflare API Response:', JSON.stringify(cloudflareResponse.data, null, 2))
+
       // 5. Save or update participant in database
       if (!existingParticipant) {
         await WebinarParticipant.create({
@@ -245,11 +248,31 @@ export default class WebinarController {
         await existingParticipant.save()
       }
 
-      // 6. Return success response with meeting details
+      // 6. Extract auth token from Cloudflare response for RTK
+      const cfResponseData = cloudflareResponse.data
+      
+      // The auth token for RTK is typically in the Cloudflare response
+      // Common locations: token, authToken, access_token, data.token
+      const authToken = 
+        cfResponseData.token || 
+        cfResponseData.authToken || 
+        cfResponseData.access_token ||
+        cfResponseData.data?.token ||
+        cfResponseData.data?.authToken
+
+      console.log('Extracted auth token:', authToken ? 'Found' : 'Not found')
+      console.log('Auth token length:', authToken ? authToken.length : 'N/A')
+      
+      // Return success response with meeting details and auth token
       return ctx.response.json({
         status: 'joined',
         message: 'Successfully joined the meeting',
-        meeting_data: cloudflareResponse.data,
+        meeting_data: {
+          ...cfResponseData,
+          // Ensure auth token is available at top level for frontend
+          token: authToken,
+          authToken: authToken,
+        },
         webinar: {
           id: webinar.id,
           topic: webinar.topic,

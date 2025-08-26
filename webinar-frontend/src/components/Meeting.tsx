@@ -22,19 +22,21 @@ const Meeting: React.FC = () => {
   const [message, setMessage] = useState("");
   const [meetingInitialized, setMeetingInitialized] = useState(false);
   const [participant, setParticipant] = useState<any>(null);
+  const [authToken, setAuthToken] = useState<string>("");
+  const [joined, setJoined] = useState(false);
 
   function stopScreenShare() {
     if (!meeting) return;
     meeting.self.disableScreenShare();
   }
 
-  // Initialize RTK Meeting using backend API
-  const initializeRTKMeeting = async (webinarData: any) => {
+  // Get auth token from backend API
+  const getAuthTokenFromBackend = async (webinarData: any) => {
     try {
-      if (!participant || meetingInitialized) return;
-      
-      setMessage('Joining meeting...');
-      
+      if (!participant || authToken) return; // Don't call again if we already have token
+
+      setMessage("Joining meeting...");
+
       // Call backend API to get Cloudflare meeting credentials
       const joinResponse = await axios.post(
         `http://localhost:3333/webinar/${webinarId}/join`,
@@ -44,40 +46,71 @@ const Meeting: React.FC = () => {
         }
       );
 
-      if (joinResponse.data.status === 'joined') {
+      if (joinResponse.data.status === "joined") {
         const { meeting_data } = joinResponse.data;
         
-        console.log('Meeting data received:', meeting_data);
+        console.log("Meeting data received:", meeting_data);
         
-        // Initialize RTK meeting with credentials from Cloudflare
-        const meetingConfig = {
-          // The meeting_data contains the Cloudflare response
-          sessionId: meeting_data.sessionId || webinarData.cf_meeting_id,
-          // Use the session token from Cloudflare response
-          sessionToken: meeting_data.sessionToken,
-          // Participant info
-          participantName: participant.name,
-          participantId: joinResponse.data.participant.cloudflare_participant_id,
-          // Any additional Cloudflare config from the response
-          ...meeting_data,
-        };
+        // Extract and store auth token (following the working pattern)
+        const token = meeting_data.token || meeting_data.authToken || meeting_data.sessionToken;
         
-        console.log('Initializing meeting with config:', meetingConfig);
-        
-        await initMeeting(meetingConfig);
-
-        setMeetingInitialized(true);
-        setMessage('Successfully joined the meeting!');
+        if (token) {
+          setAuthToken(token);
+          console.log("Auth token received and stored");
+          setMessage("Connecting to meeting...");
+        } else {
+          throw new Error("No auth token received from backend");
+        }
       } else {
-        throw new Error(joinResponse.data.message || 'Failed to join meeting');
+        throw new Error(joinResponse.data.message || "Failed to join meeting");
       }
     } catch (error: any) {
-      console.error('Failed to initialize RTK meeting:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to join meeting. Please try again.';
+      console.error("Failed to get auth token:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to join meeting. Please try again.";
       setMessage(errorMessage);
-      // Don't set status to failed, let user retry
     }
   };
+
+  // Initialize RTK Meeting when auth token is available (following working pattern)
+  useEffect(() => {
+    async function initializeMeeting() {
+      console.log("🔄 Attempting RTK initialization:", {
+        authToken: !!authToken,
+        joined,
+        participant: !!participant,
+      });
+
+      if (!authToken || joined || !participant) {
+        console.log("⛔ Skipping init. Missing prerequisites or already joined.");
+        return;
+      }
+
+      setMessage("Initializing meeting...");
+
+      try {
+        await initMeeting({
+          authToken,
+          defaults: {
+            audio: false,
+            video: false,
+          },
+        });
+
+        console.log("✅ Meeting initialized successfully");
+        setJoined(true);
+        setMeetingInitialized(true);
+        setMessage("Successfully joined the meeting!");
+      } catch (err) {
+        console.error("❌ Error initializing meeting:", err);
+        setMessage("Failed to initialize meeting. Please try again.");
+      }
+    }
+
+    initializeMeeting();
+  }, [authToken, joined, initMeeting, participant]);
 
   // Token verification with timeout
   useEffect(() => {
@@ -228,9 +261,9 @@ const Meeting: React.FC = () => {
               <button
                 className={styles.joinButton}
                 onClick={() =>
-                  initializeRTKMeeting({ cf_meeting_id: webinarId })
+                  getAuthTokenFromBackend({ cf_meeting_id: webinarId })
                 }
-                disabled={message.includes("Joining meeting...")}
+                disabled={message.includes("Joining meeting...") || !!authToken}
               >
                 {message.includes("Joining meeting...") ? (
                   <>
@@ -257,7 +290,7 @@ const Meeting: React.FC = () => {
                 <button
                   className={styles.retryButton}
                   onClick={() =>
-                    initializeRTKMeeting({ cf_meeting_id: webinarId })
+                    getAuthTokenFromBackend({ cf_meeting_id: webinarId })
                   }
                 >
                   Retry
