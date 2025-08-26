@@ -12,6 +12,9 @@
 import 'reflect-metadata'
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
 
+// Force port 3333 before everything else
+process.env.PORT = '3333'
+
 /**
  * URL to the application root. AdonisJS need it to resolve
  * paths to file and directories for scaffolding commands
@@ -33,6 +36,8 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
   .tap((app) => {
     app.booting(async () => {
       await import('#start/env')
+      // Force port 3333 for development
+      process.env.PORT = process.env.PORT || '3333'
     })
     app.listen('SIGTERM', () => app.terminate())
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())

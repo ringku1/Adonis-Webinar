@@ -20,6 +20,9 @@ export default class WebinarParticipant extends BaseModel {
   @column()
   declare login_type: 'registered' | 'guest'
 
+  @column()
+  declare cloudflare_participant_id: string
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
