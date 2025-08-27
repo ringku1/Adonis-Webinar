@@ -16,6 +16,11 @@ const Meeting: React.FC = () => {
   const token = searchParams.get("jwt") as string;
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [started, setStarted] = useState(false);
+
+  // Debug: Log started state changes
+  useEffect(() => {
+    console.log("🚀 Started state changed to:", started);
+  }, [started]);
   const [status, setStatus] = useState<"verifying" | "verified" | "failed">(
     "verifying"
   );
@@ -48,12 +53,15 @@ const Meeting: React.FC = () => {
 
       if (joinResponse.data.status === "joined") {
         const { meeting_data } = joinResponse.data;
-        
+
         console.log("Meeting data received:", meeting_data);
-        
+
         // Extract and store auth token (following the working pattern)
-        const token = meeting_data.token || meeting_data.authToken || meeting_data.sessionToken;
-        
+        const token =
+          meeting_data.token ||
+          meeting_data.authToken ||
+          meeting_data.sessionToken;
+
         if (token) {
           setAuthToken(token);
           console.log("Auth token received and stored");
@@ -84,7 +92,9 @@ const Meeting: React.FC = () => {
       });
 
       if (!authToken || joined || !participant) {
-        console.log("⛔ Skipping init. Missing prerequisites or already joined.");
+        console.log(
+          "⛔ Skipping init. Missing prerequisites or already joined."
+        );
         return;
       }
 
@@ -168,7 +178,7 @@ const Meeting: React.FC = () => {
 
         // Handle different start_time formats from backend
         let meetingStartTime: Date;
-        const startTimeData = res.data.webinar.start_time;
+        const startTimeData = res.data.webinar.startTime;
 
         if (typeof startTimeData === "string") {
           meetingStartTime = new Date(startTimeData);
@@ -194,25 +204,26 @@ const Meeting: React.FC = () => {
           console.error("Raw start_time type:", typeof startTimeData);
           console.error("Raw start_time value:", startTimeData);
 
-          // Fallback: assume meeting has started if we can't parse the date
-          console.warn("Cannot parse start time, assuming meeting has started");
-          setStartTime(new Date()); // Use current time as fallback
-          setTimeout(() => {
-            setStarted(true);
-          }, 1000);
+          // Instead of assuming meeting started, show an error
+          setMessage(
+            "Error: Unable to determine meeting start time. Please contact support."
+          );
+          setStatus("failed");
           return;
         }
 
         setStartTime(meetingStartTime);
 
-        // Check if meeting has already started
+        // Initial check if meeting has already started
         const now = new Date();
-        if (meetingStartTime <= now) {
-          // Delay before setting started state
-          setTimeout(() => {
-            setStarted(true);
-          }, 1000);
-        }
+        console.log("🕐 Initial time comparison:", {
+          meetingStartTime: meetingStartTime.toISOString(),
+          currentTime: now.toISOString(),
+          hasStarted: meetingStartTime <= now,
+        });
+
+        // Set initial started state based on current time
+        setStarted(meetingStartTime <= now);
       } catch (err: any) {
         setMessage(
           err.response?.data?.message || "Error fetching meeting details"
@@ -222,6 +233,34 @@ const Meeting: React.FC = () => {
 
     fetchMeetingDetails();
   }, [status, webinarId]);
+
+  // Real-time timer to check if meeting has started (runs every 10 seconds)
+  useEffect(() => {
+    if (!startTime || started) return;
+
+    const checkMeetingStart = () => {
+      const now = new Date();
+      console.log("🔄 Timer check - Meeting start status:", {
+        meetingStartTime: startTime.toISOString(),
+        currentTime: now.toISOString(),
+        hasStarted: startTime <= now,
+        currentStartedState: started,
+      });
+
+      if (startTime <= now && !started) {
+        console.log("✅ Timer detected meeting has started!");
+        setStarted(true);
+      }
+    };
+
+    // Check immediately
+    checkMeetingStart();
+
+    // Then check every 10 seconds
+    const intervalId = setInterval(checkMeetingStart, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [startTime, started]);
 
   return (
     <div className={styles.container}>
