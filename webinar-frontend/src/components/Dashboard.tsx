@@ -7,7 +7,6 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [showRegisterInput, setShowRegisterInput] = useState(false);
   const [webinarId, setWebinarId] = useState("");
-
   const handleCreateWebinar = () => {
     navigate("/create");
   };
@@ -24,6 +23,9 @@ const Dashboard: React.FC = () => {
     }
     navigate(`/register/${webinarId}`);
   };
+  const handleParticipantClick = () => {
+    navigate("/participants");
+  };
 
   return (
     <div className={styles.container}>
@@ -31,7 +33,10 @@ const Dashboard: React.FC = () => {
       <h2>Dashboard</h2>
       <div className={styles.buttons}>
         <button onClick={handleCreateWebinar}>Create Webinar</button>
-        <button onClick={handleRegisterClick}>Register for Webinar</button>
+        <button onClick={handleRegisterClick}>Register For Webinar</button>
+        <button onClick={handleParticipantClick}>
+          Participants Registered For The Webinar
+        </button>
       </div>
 
       {showRegisterInput && (

@@ -8,6 +8,16 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.tableContainer {
+  max-width: 100%;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
 /* Meeting view gets full width */
 .container:has(.meetingContainer) {
   max-width: 95vw;
@@ -269,13 +279,13 @@ button:hover {
     height: 70vh;
     min-height: 400px;
   }
-  
+
   .container:has(.meetingContainer) {
     max-width: 98vw;
     margin: 1vh auto;
     padding: 10px;
   }
-  
+
   .joinButton {
     width: 100%;
     padding: 12px 20px;

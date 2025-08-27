@@ -73,8 +73,12 @@ export default class WebinarController {
 
   // Get all participants
   async getAllParticipants() {
-    const participants = await WebinarParticipant.query().orderBy('created_at', 'desc')
-    return { participants }
+    try {
+      const participants = await WebinarParticipant.query().orderBy('created_at', 'desc')
+      return { message: 'Participants fetched successfully', participants }
+    } catch (error) {
+      return { message: error.message || 'Error feteching participants' }
+    }
   }
   // app/Controllers/Http/WebinarController.ts
   async verifyToken(ctx: HttpContext) {
@@ -250,19 +254,19 @@ export default class WebinarController {
 
       // 6. Extract auth token from Cloudflare response for RTK
       const cfResponseData = cloudflareResponse.data
-      
+
       // The auth token for RTK is typically in the Cloudflare response
       // Common locations: token, authToken, access_token, data.token
-      const authToken = 
-        cfResponseData.token || 
-        cfResponseData.authToken || 
+      const authToken =
+        cfResponseData.token ||
+        cfResponseData.authToken ||
         cfResponseData.access_token ||
         cfResponseData.data?.token ||
         cfResponseData.data?.authToken
 
       console.log('Extracted auth token:', authToken ? 'Found' : 'Not found')
       console.log('Auth token length:', authToken ? authToken.length : 'N/A')
-      
+
       // Return success response with meeting details and auth token
       return ctx.response.json({
         status: 'joined',
