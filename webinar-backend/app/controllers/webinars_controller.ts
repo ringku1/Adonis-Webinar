@@ -11,19 +11,11 @@ export default class WebinarController {
     try {
       // Validate the request body using webinarSchema
       const data = ctx.request.only(['topic', 'agenda', 'start_time'])
-      //const timeZoneOffset = ctx.request.input('timezone_offset')
       const validatedData = await createCreateWebinarValidator.validate(data)
 
-      // Add timezone offset to start_time
-      const startTime = new Date(validatedData.start_time)
-      const adjustedStartTime = new Date(startTime.getTime())
-      // console.log(data.start_time)
-      // console.log('\n')
-      // console.log(new Date())
-      // console.log('\n')
-      // console.log(adjustedStartTime)
       // Webinar start time should be in future
-      if (adjustedStartTime.getTime() < new Date().getTime()) {
+      const startTime = new Date(validatedData.start_time)
+      if (startTime.getTime() < new Date().getTime()) {
         return ctx.response.status(400).json({ message: 'Start time must be in the future' })
       }
       // create webinar

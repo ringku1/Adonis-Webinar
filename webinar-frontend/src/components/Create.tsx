@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-//import { useParams } from "react-router-dom";
 import axios from "axios";
 import styles from "./Register.module.css";
-//import { isDate } from "util/types";
 
 const Create: React.FC = () => {
   const [topic, setTopic] = useState("");
@@ -38,20 +36,12 @@ const Create: React.FC = () => {
         ":" +
         String(localDate.getUTCSeconds()).padStart(2, "0");
 
-      console.log(utcDateTime);
       const res = await axios.post("http://localhost:3333/webinar/create", {
         topic,
         agenda,
         start_time: utcDateTime,
         timezone_offset: userTimezone.offsetMinutes,
       });
-      // try {
-      //   const res = await axios.post(`http://localhost:3333/webinar/create`, {
-      //     topic: topic,
-      //     agenda: agenda,
-      //     start_time: startTime,
-      //     timezone_offset: userTimezone.offsetMinutes,
-      //   });
       setMessage(res.data.message);
       if (res.data.joinUrl) {
         setJoinUrl(res.data.joinUrl);
@@ -96,12 +86,7 @@ const Create: React.FC = () => {
           <input
             type="datetime-local"
             value={startTime}
-            onChange={(e) => {
-              const selectedTime = new Date(e.target.value).getTime();
-              const minAllowedTime = Date.now() + 60 * 1000; // 1 minute ahead
-              setStartTime(e.target.value);
-              //console.log(startTime);
-            }}
+            onChange={(e) => setStartTime(e.target.value)}
             required
             min={local}
           />
