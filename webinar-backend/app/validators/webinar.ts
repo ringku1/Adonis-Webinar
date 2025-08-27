@@ -7,7 +7,7 @@ export const createCreateWebinarValidator = vine.compile(
     start_time: vine
       .string()
       .trim()
-      .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/), // YYYY-MM-DDTHH:MM
+      .regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/), // YYYY-MM-DD HH:MM:SS
   })
 )
 

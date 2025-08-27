@@ -10,6 +10,12 @@ const Create: React.FC = () => {
   const [startTime, setStartTime] = useState("");
   const [joinUrl, setJoinUrl] = useState("");
   const [message, setMessage] = useState("");
+
+  // User timezone information
+  const userTimezone = {
+    offsetMinutes: new Date().getTimezoneOffset(),
+  };
+
   const now = new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
     .toISOString()
@@ -17,11 +23,35 @@ const Create: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`http://localhost:3333/webinar/create`, {
-        topic: topic,
-        agenda: agenda,
-        start_time: startTime,
+      // Convert local datetime-local input to UTC string for MySQL DATETIME
+      const localDate = new Date(startTime);
+      const utcDateTime =
+        localDate.getUTCFullYear() +
+        "-" +
+        String(localDate.getUTCMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(localDate.getUTCDate()).padStart(2, "0") +
+        " " +
+        String(localDate.getUTCHours()).padStart(2, "0") +
+        ":" +
+        String(localDate.getUTCMinutes()).padStart(2, "0") +
+        ":" +
+        String(localDate.getUTCSeconds()).padStart(2, "0");
+
+      console.log(utcDateTime);
+      const res = await axios.post("http://localhost:3333/webinar/create", {
+        topic,
+        agenda,
+        start_time: utcDateTime,
+        timezone_offset: userTimezone.offsetMinutes,
       });
+      // try {
+      //   const res = await axios.post(`http://localhost:3333/webinar/create`, {
+      //     topic: topic,
+      //     agenda: agenda,
+      //     start_time: startTime,
+      //     timezone_offset: userTimezone.offsetMinutes,
+      //   });
       setMessage(res.data.message);
       if (res.data.joinUrl) {
         setJoinUrl(res.data.joinUrl);
@@ -31,7 +61,6 @@ const Create: React.FC = () => {
       setStartTime("");
     } catch (err: any) {
       setMessage(err.response?.data?.message || "Error occurred");
-      //console.log(startTime);
     }
   };
 
@@ -71,7 +100,7 @@ const Create: React.FC = () => {
               const selectedTime = new Date(e.target.value).getTime();
               const minAllowedTime = Date.now() + 60 * 1000; // 1 minute ahead
               setStartTime(e.target.value);
-              console.log(startTime);
+              //console.log(startTime);
             }}
             required
             min={local}
