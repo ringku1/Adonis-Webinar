@@ -318,7 +318,11 @@ const Meeting: React.FC = () => {
             <div className={styles.meetingContainer}>
               <h3>Welcome to the Webinar!</h3>
               <RealtimeKitProvider value={meeting}>
-                <RtkMeeting meeting={meeting} config={defaultConfig} />
+                <RtkMeeting
+                  meeting={meeting}
+                  config={defaultConfig}
+                  showSetupScreen={false}
+                />
               </RealtimeKitProvider>
             </div>
           ) : (

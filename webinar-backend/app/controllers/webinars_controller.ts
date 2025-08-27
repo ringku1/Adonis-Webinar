@@ -247,12 +247,12 @@ export default class WebinarController {
           email: validatedData.email,
           webinar_id: webinarId,
           login_type: 'registered',
-          cloudflare_participant_id: cloudflareParticipantId,
+          //cloudflare_participant_id: cloudflareParticipantId,
           token: '', // No JWT token needed for direct join
         })
       } else {
         // Update existing participant
-        existingParticipant.cloudflare_participant_id = cloudflareParticipantId
+        //existingParticipant.cloudflare_participant_id = cloudflareParticipantId
         existingParticipant.name = validatedData.name // Update name if changed
         await existingParticipant.save()
       }
@@ -291,7 +291,7 @@ export default class WebinarController {
         participant: {
           name: validatedData.name,
           email: validatedData.email,
-          cloudflare_participant_id: cloudflareParticipantId,
+          //cloudflare_participant_id: cloudflareParticipantId,
         },
       })
     } catch (error: any) {
