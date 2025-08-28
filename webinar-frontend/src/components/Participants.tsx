@@ -7,14 +7,13 @@ const Participants: React.FC = () => {
     Array<{
       id: number;
       webinarId: number;
-      cloudflareParticipantId: string;
       name: string;
       email: string;
       token: string;
     }>
   >([]);
   const [loading, setLoading] = useState(true);
-  const [selectedToken, setSelectedToken] = useState<string | null>(null);
+  const [selectedLink, setSelectedLink] = useState<string | null>(null);
 
   useEffect(() => {
     const getAllParticipants = async () => {
@@ -34,17 +33,18 @@ const Participants: React.FC = () => {
     getAllParticipants();
   }, []);
 
-  const handleTokenClick = (token: string) => {
-    setSelectedToken(token);
+  const handleLinkClick = (id: number, token: string) => {
+    const fullLink = `http://localhost:3000/verify-token?webinarId=${id}&jwt=${token}`;
+    setSelectedLink(fullLink);
   };
 
-  const closeTokenPopup = () => {
-    setSelectedToken(null);
+  const closeLinkPopup = () => {
+    setSelectedLink(null);
   };
 
-  const copyTokenToClipboard = (token: string) => {
-    navigator.clipboard.writeText(token);
-    alert("Token copied to clipboard!");
+  const copyLinkToClipboard = (link: string) => {
+    navigator.clipboard.writeText(link);
+    alert("Join Link copied to clipboard!");
   };
 
   return (
@@ -66,10 +66,9 @@ const Participants: React.FC = () => {
               <tr>
                 <th className={styles.th}>ID</th>
                 <th className={styles.th}>Webinar ID</th>
-                <th className={styles.th}>CF Participant ID</th>
                 <th className={styles.th}>Name</th>
                 <th className={styles.th}>Email</th>
-                <th className={styles.th}>Token Preview</th>
+                <th className={styles.th}>Join Link</th>
               </tr>
             </thead>
             <tbody className={styles.tableBody}>
@@ -97,11 +96,6 @@ const Participants: React.FC = () => {
                       </span>
                     </td>
                     <td className={styles.td}>
-                      <span className={styles.cfId}>
-                        {participant.cloudflareParticipantId || "Not assigned"}
-                      </span>
-                    </td>
-                    <td className={styles.td}>
                       <div className={styles.nameCell}>
                         <span className={styles.name}>{participant.name}</span>
                       </div>
@@ -111,18 +105,21 @@ const Participants: React.FC = () => {
                     </td>
                     <td className={styles.td}>
                       <span
-                        className={styles.tokenPreview}
+                        className={styles.linkPreview}
                         onClick={() =>
                           participant.token &&
-                          handleTokenClick(participant.token)
+                          handleLinkClick(
+                            participant.webinarId,
+                            participant.token
+                          )
                         }
                         style={{
                           cursor: participant.token ? "pointer" : "default",
                         }}
                       >
                         {participant.token
-                          ? `${participant.token.substring(0, 20)}...`
-                          : "No token"}
+                          ? `🔗 Click to view join link`
+                          : "No Join Link"}
                       </span>
                     </td>
                   </tr>
@@ -146,32 +143,32 @@ const Participants: React.FC = () => {
         </div>
       </div>
 
-      {/* Token Popup Modal */}
-      {selectedToken && (
-        <div className={styles.modalOverlay} onClick={closeTokenPopup}>
+      {/* Link Popup Modal */}
+      {selectedLink && (
+        <div className={styles.modalOverlay} onClick={closeLinkPopup}>
           <div
             className={styles.modalContent}
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.modalHeader}>
-              <h3>Full Token</h3>
-              <button className={styles.closeButton} onClick={closeTokenPopup}>
+              <h3>Full Join Link</h3>
+              <button className={styles.closeButton} onClick={closeLinkPopup}>
                 ×
               </button>
             </div>
-            <div className={styles.tokenContainer}>
-              <pre className={styles.fullToken}>{selectedToken}</pre>
+            <div className={styles.linkContainer}>
+              <pre className={styles.fullLink}>{selectedLink}</pre>
             </div>
             <div className={styles.modalActions}>
               <button
                 className={styles.copyButton}
-                onClick={() => copyTokenToClipboard(selectedToken)}
+                onClick={() => copyLinkToClipboard(selectedLink)}
               >
-                📋 Copy Token
+                📋 Copy Link
               </button>
               <button
                 className={styles.closeActionButton}
-                onClick={closeTokenPopup}
+                onClick={closeLinkPopup}
               >
                 Close
               </button>

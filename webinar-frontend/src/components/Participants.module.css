@@ -158,7 +158,7 @@
   border: 1px solid #dbeafe;
 }
 
-.tokenPreview {
+.linkPreview {
   font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.8rem;
   color: #6b7280;
@@ -279,8 +279,8 @@
 
 /* ... (keep all previous styles) ... */
 
-/* Token Preview with hover effect */
-.tokenPreview {
+/* Link Preview with hover effect */
+.linkPreview {
   font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.8rem;
   color: #6b7280;
@@ -296,7 +296,7 @@
   transition: all 0.2s ease;
 }
 
-.tokenPreview:hover {
+.linkPreview:hover {
   background: #e2e8f0;
   border-color: #cbd5e1;
   transform: translateY(-1px);
@@ -378,15 +378,14 @@
   background: #e5e7eb;
   color: #374151;
 }
-
-.tokenContainer {
+.linkContainer {
   padding: 24px;
   background: #fafbfc;
   max-height: 40vh;
   overflow-y: auto;
 }
 
-.fullToken {
+.fullLink {
   background: #1f2937;
   color: #10b981;
   padding: 20px;
@@ -455,11 +454,11 @@
     font-size: 1.2rem;
   }
 
-  .tokenContainer {
+  .linkContainer {
     padding: 16px;
   }
 
-  .fullToken {
+  .fullLink {
     padding: 16px;
     font-size: 0.8rem;
   }
@@ -475,21 +474,21 @@
   }
 }
 
-/* Scrollbar styling for token container */
-.tokenContainer::-webkit-scrollbar {
+/* Scrollbar styling for link container */
+.linkContainer::-webkit-scrollbar {
   width: 8px;
 }
 
-.tokenContainer::-webkit-scrollbar-track {
+.linkContainer::-webkit-scrollbar-track {
   background: #f1f5f9;
   border-radius: 4px;
 }
 
-.tokenContainer::-webkit-scrollbar-thumb {
+.linkContainer::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
 
-.tokenContainer::-webkit-scrollbar-thumb:hover {
+.linkContainer::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
