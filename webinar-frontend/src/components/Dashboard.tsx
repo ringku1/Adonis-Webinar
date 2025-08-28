@@ -26,6 +26,9 @@ const Dashboard: React.FC = () => {
   const handleParticipantClick = () => {
     navigate("/participants");
   };
+  const handleJoinHostClick = () => {
+    navigate("/join/host");
+  };
 
   return (
     <div className={styles.container}>
@@ -34,24 +37,24 @@ const Dashboard: React.FC = () => {
       <div className={styles.buttons}>
         <button onClick={handleCreateWebinar}>Create Webinar</button>
         <button onClick={handleRegisterClick}>Register For Webinar</button>
+        {showRegisterInput && (
+          <form className={styles.registerForm} onSubmit={handleRegisterSubmit}>
+            <label>Enter Webinar ID</label>
+            <input
+              type="text"
+              value={webinarId}
+              onChange={(e) => setWebinarId(e.target.value)}
+              placeholder="Webinar ID"
+              required
+            />
+            <button type="submit">Go to Register</button>
+          </form>
+        )}
+        <button onClick={handleJoinHostClick}>Join Webinar As Host</button>
         <button onClick={handleParticipantClick}>
           Participants Registered For The Webinar
         </button>
       </div>
-
-      {showRegisterInput && (
-        <form className={styles.registerForm} onSubmit={handleRegisterSubmit}>
-          <label>Enter Webinar ID</label>
-          <input
-            type="text"
-            value={webinarId}
-            onChange={(e) => setWebinarId(e.target.value)}
-            placeholder="Webinar ID"
-            required
-          />
-          <button type="submit">Go to Register</button>
-        </form>
-      )}
     </div>
   );
 };
