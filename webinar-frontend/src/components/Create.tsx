@@ -36,7 +36,7 @@ const Create: React.FC = () => {
         ":" +
         String(localDate.getUTCSeconds()).padStart(2, "0");
 
-      const res = await axios.post("http://localhost:3333/webinar/create", {
+      const res = await axios.post("http://localhost:3333/webinars/create", {
         topic,
         agenda,
         start_time: utcDateTime,

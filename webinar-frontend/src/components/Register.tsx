@@ -19,7 +19,7 @@ const Register: React.FC = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:3333/webinar/${webinarId}/register_participant`,
+        `http://localhost:3333/webinars/${webinarId}/register_participant`,
         { name: name, email: email }
       );
       setMessage(res.data.message);

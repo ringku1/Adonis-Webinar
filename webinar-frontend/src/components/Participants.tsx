@@ -18,7 +18,9 @@ const Participants: React.FC = () => {
   useEffect(() => {
     const getAllParticipants = async () => {
       try {
-        const res = await axios.get(`http://localhost:3333/participants`);
+        const res = await axios.get(
+          `http://localhost:3333/webinars/participants`
+        );
 
         if (res.data.message.includes("Participants fetched successfully")) {
           setParticipants(res.data.participants);
@@ -34,7 +36,7 @@ const Participants: React.FC = () => {
   }, []);
 
   const handleLinkClick = (id: number, token: string) => {
-    const fullLink = `http://localhost:3000/verify-token?webinarId=${id}&jwt=${token}`;
+    const fullLink = `http://localhost:3000/webinars/verify-token?webinarId=${id}&jwt=${token}`;
     setSelectedLink(fullLink);
   };
 

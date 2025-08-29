@@ -44,7 +44,7 @@ const Meeting: React.FC = () => {
 
       // Call backend API to get Cloudflare meeting credentials
       const joinResponse = await axios.post(
-        `http://localhost:3333/webinar/${webinarId}/join`,
+        `http://localhost:3333/webinars/${webinarId}/join`,
         {
           name: participant.name,
           email: participant.email,
@@ -136,7 +136,7 @@ const Meeting: React.FC = () => {
 
       try {
         const res = await axios.get(
-          `http://localhost:3333/verify-token?webinarId=${webinarId}&jwt=${token}`
+          `http://localhost:3333/webinars/verify-token?webinarId=${webinarId}&jwt=${token}`
         );
 
         // Small delay before showing success message
@@ -171,7 +171,7 @@ const Meeting: React.FC = () => {
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
         const res = await axios.get(
-          `http://localhost:3333/meeting/${webinarId}`
+          `http://localhost:3333/webinars/meeting/${webinarId}`
         );
 
         console.log("Meeting details response:", res.data.webinar);
