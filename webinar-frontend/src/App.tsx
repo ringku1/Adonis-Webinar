@@ -6,6 +6,7 @@ import Dashboard from "./components/Dashboard";
 import Meeting from "./components/Meeting";
 import Participants from "./components/Participants";
 import JoinAsHost from "./components/JoinAsHost";
+import Webinars from "./components/Webinars";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/participants" element={<Participants />} />
         <Route path="/join/host" element={<JoinAsHost />} />
+        <Route path="/meetings" element={<Webinars />} />
       </Routes>
     </Router>
   );

@@ -21,10 +21,7 @@ export default class WebinarQuery {
   public async queryParticipants() {
     return await WebinarParticipant.query().orderBy('created_at', 'desc')
   }
-  // public async queryParticipant(email: string, webinarId: number) {
-  //   return await WebinarParticipant.query()
-  //     .where('email', email)
-  //     .andWhere('webinar_id', webinarId)
-  //     .first()
-  // }
+  public async queryWebinars() {
+    return await Webinar.query().orderBy('created_at', 'desc')
+  }
 }

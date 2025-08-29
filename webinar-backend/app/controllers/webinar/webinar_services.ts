@@ -273,4 +273,8 @@ export default class WebinarService {
       },
     }
   }
+  public async getAllWebinars() {
+    const webinars = await this.webinarQuery.queryWebinars()
+    return { message: 'Webinars fetched successfully', webinars: webinars }
+  }
 }

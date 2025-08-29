@@ -9,5 +9,6 @@ router
     router.get('/participants', [WebinarController, 'getAllParticipants'])
     router.get('/verify-token', [WebinarController, 'verifyToken'])
     router.get('/meeting/:webinarId', [WebinarController, 'getMeetingDetails'])
+    router.get('/meetings', [WebinarController, 'getAllWebinars'])
   })
   .prefix('/webinars')

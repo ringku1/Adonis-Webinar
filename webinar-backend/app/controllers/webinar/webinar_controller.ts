@@ -86,4 +86,12 @@ export default class WebinarController {
       })
     }
   }
+  public async getAllWebinars(ctx: HttpContext) {
+    try {
+      return await this.webinarService.getAllWebinars()
+    } catch (error) {
+      // if validation fails, Adonis will throw an exception
+      return ctx.response.status(400).json({ message: error.message || 'Validation failed' })
+    }
+  }
 }

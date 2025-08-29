@@ -29,6 +29,9 @@ const Dashboard: React.FC = () => {
   const handleJoinHostClick = () => {
     navigate("/join/host");
   };
+  const handleWebinarsClick = () => {
+    navigate("/meetings");
+  };
 
   return (
     <div className={styles.container}>
@@ -53,6 +56,9 @@ const Dashboard: React.FC = () => {
         <button onClick={handleJoinHostClick}>Join Webinar As Host</button>
         <button onClick={handleParticipantClick}>
           Participants Registered For The Webinar
+        </button>
+        <button onClick={handleWebinarsClick}>
+          Webinars list created for conferencing
         </button>
       </div>
     </div>
