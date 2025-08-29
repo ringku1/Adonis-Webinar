@@ -12,6 +12,10 @@ export default class WebinarService {
   }
 
   public async createWebinar(payload: any) {
+    const startTime = new Date(payload.start_time)
+    if (startTime.getTime() < new Date().getTime()) {
+      throw new Exception('Start time must be in the future')
+    }
     // create webinar
     payload['cf_meeting_id'] = process.env.cf_meeting_id
 
