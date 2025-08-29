@@ -177,7 +177,7 @@ const Meeting: React.FC = () => {
         //console.log("Meeting details response:", res.data.webinar);
 
         // Handle different start_time formats from backend
-        if (!res.data.message.includes("TWebinar details fetched successfully"))
+        if (!res.data.message.includes("Webinar details fetched successfully"))
           return;
 
         let meetingStartTime: Date;

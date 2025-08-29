@@ -36,7 +36,7 @@ const Participants: React.FC = () => {
   }, []);
 
   const handleLinkClick = (id: number, token: string) => {
-    const fullLink = `http://localhost:3000/webinars/verify-token?webinarId=${id}&jwt=${token}`;
+    const fullLink = `http://localhost:3000/verify-token?webinarId=${id}&jwt=${token}`;
     setSelectedLink(fullLink);
   };
 

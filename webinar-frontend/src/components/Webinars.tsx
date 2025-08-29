@@ -33,7 +33,7 @@ const Webinars: React.FC = () => {
   }, []);
 
   const handleLinkClick = (id: number) => {
-    const fullLink = `http://localhost:3000/webinars/?webinarId=${id}/register_participant`;
+    const fullLink = `http://localhost:3000/register/${id}`;
     setSelectedLink(fullLink);
   };
 
