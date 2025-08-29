@@ -9,12 +9,12 @@ export default class WebinarController {
     this.webinarService = new WebinarService()
   }
 
-  public async create(ctx: HttpContext) {
+  public async createWebinar(ctx: HttpContext) {
     try {
       const validatedData = await createWebinarValidator.validate(
         ctx.request.only(['topic', 'agenda', 'start_time'])
       )
-      return await this.webinarService.create(validatedData)
+      return await this.webinarService.createWebinar(validatedData)
     } catch (error) {
       // if validation fails, Adonis will throw an exception
       return ctx.response.status(400).json({ message: error.message || 'Validation failed' })
@@ -31,7 +31,6 @@ export default class WebinarController {
       return ctx.response.status(400).json({ message: error.message || 'Validation failed' })
     }
   }
-
   public async getAllParticipants(ctx: HttpContext) {
     try {
       return await this.webinarService.getAllParticipants()

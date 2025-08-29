@@ -11,7 +11,7 @@ export default class WebinarService {
     this.webinarQuery = new WebinarQuery()
   }
 
-  public async create(payload: any) {
+  public async createWebinar(payload: any) {
     // create webinar
     payload['cf_meeting_id'] = process.env.cf_meeting_id
 
@@ -19,42 +19,44 @@ export default class WebinarService {
       throw new Exception('Cf meeting id invalid / not found')
     }
 
-    const webinar = await this.webinarQuery.create(payload)
+    const webinar = await this.webinarQuery.createWebinar(payload)
     // get webinar ID
     const webinarId = webinar.id
     const joinUrl = `http://localhost:3000/register/${webinarId}`
 
-    return { webinar: webinar, join_url: joinUrl }
+    return { message: 'Webinar is created', webinar: webinar, join_url: joinUrl }
   }
   public async registerParticipant(payload: any, ctx: HttpContext) {
     const webinarId = ctx.params.webinarId
     //user registration
-    payload['webinarId'] = webinarId
-    if (!payload.webinarId) {
+    payload['webinar_id'] = webinarId
+    if (!payload.webinar_id) {
       throw new Exception('Webinar ID invalid / not found')
     }
-    const webinar = await this.webinarQuery.find(webinarId)
+    const webinar = await this.webinarQuery.findWebinar(webinarId)
     if (!webinar) {
       throw new Exception('Webinar not found')
     }
-    const existingParticipant = await this.webinarQuery.query(payload.email, webinarId)
+    const participantEmailWebinarId = { email: payload.email, webinar_id: webinarId }
+    const existingParticipant = await this.webinarQuery.findParticipant(participantEmailWebinarId)
     if (existingParticipant) {
       throw new Exception('Email already registered for this webinar')
     }
     const secret = process.env.JWT_SECRET as string
     const token = jwt.sign({ email: payload.email, webinarId }, secret, { expiresIn: '24h' })
-    const participant = await this.webinarQuery.create({
-      ...payload,
-      token,
-      login_type: 'registered',
-      webinar_id: webinarId,
-    })
+    payload['token'] = token
+    payload['webinar_id'] = webinarId
+    payload['login_type'] = 'registered'
+    const participant = await this.webinarQuery.createParticipant(payload)
+    if (!participant) {
+      throw new Exception('Registration unsuccessful')
+    }
     const joinUrl = `http://localhost:3000/verify-token?webinarId=${webinarId}&jwt=${token}`
-    return { participant: participant, join_url: joinUrl }
+    return { message: 'Registration successful', participant: participant, join_url: joinUrl }
   }
   public async getAllParticipants() {
     const participants = await this.webinarQuery.queryParticipants()
-    return { participants: participants }
+    return { message: 'Participants fetched successfully', participants: participants }
   }
   public async verifyToken(ctx: HttpContext) {
     const webinarId = ctx.request.qs().webinarId
@@ -70,12 +72,13 @@ export default class WebinarService {
       if (decoded.webinarId !== webinarId) {
         throw new Exception('Webinar ID mismatch')
       }
-      const participant = await this.webinarQuery.queryParticipant(decoded.email, webinarId)
+      const participantEmailWebinarId = { email: decoded.email, webinar_id: webinarId }
+      const participant = await this.webinarQuery.findParticipant(participantEmailWebinarId)
 
       if (!participant) {
         throw new Exception('Participant not found')
       }
-      return { participant: participant }
+      return { message: 'Token is valid', participant: participant }
     } catch (error) {
       throw new Exception('Invalid or expired token')
     }
@@ -85,11 +88,11 @@ export default class WebinarService {
     if (!webinarId) {
       throw new Exception('WebinarId is required')
     }
-    const webinar = await this.webinarQuery.find(webinarId)
+    const webinar = await this.webinarQuery.findWebinar(webinarId)
     if (!webinar) {
       throw new Exception('WebinarId not found')
     }
-    return { webinar: webinar }
+    return { message: 'Webinar details fetched successfully', webinar: webinar }
   }
   async joinWebinar(payload: any, ctx: HttpContext) {
     const webinarId = ctx.params.webinarId
@@ -97,7 +100,7 @@ export default class WebinarService {
       throw new Exception('WebinarId is required')
     }
     // 1. Get webinar details
-    const webinar = await this.webinarQuery.find(webinarId)
+    const webinar = await this.webinarQuery.findWebinar(webinarId)
     if (!webinar) {
       throw new Exception('Webinar not found')
     }
@@ -148,7 +151,8 @@ export default class WebinarService {
     }
 
     // 3. Meeting has started - check for existing participant
-    let existingParticipant = await this.webinarQuery.queryParticipant(payload.email, webinarId)
+    const participantEmailWebinarId = { email: payload.email, webinar_id: webinarId }
+    const existingParticipant = await this.webinarQuery.findParticipant(participantEmailWebinarId)
 
     let cloudflareParticipantId: string
 

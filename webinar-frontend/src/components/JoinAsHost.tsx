@@ -16,7 +16,7 @@ function JoinAsHost() {
       console.error("MEETING_HOST_TOKEN is not set in environment variables");
       return;
     }
-    console.log("Using auth token:", authToken);
+    //console.log("Using auth token:", authToken);
 
     setAuthToken(authToken);
   }, [authToken]);

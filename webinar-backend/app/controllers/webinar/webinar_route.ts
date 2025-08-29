@@ -1,9 +1,9 @@
-import WebinarController from '#controllers/webinars_controller'
 import router from '@adonisjs/core/services/router'
+import WebinarController from './webinar_controller.js'
 
 router
   .group(() => {
-    router.post('/create', [WebinarController, 'create'])
+    router.post('/create', [WebinarController, 'createWebinar'])
     router.post('/:webinarId/register_participant', [WebinarController, 'registerParticipant'])
     router.post('/:webinarId/join', [WebinarController, 'joinWebinar'])
     router.get('/participants', [WebinarController, 'getAllParticipants'])

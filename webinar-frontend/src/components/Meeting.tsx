@@ -174,9 +174,12 @@ const Meeting: React.FC = () => {
           `http://localhost:3333/webinars/meeting/${webinarId}`
         );
 
-        console.log("Meeting details response:", res.data.webinar);
+        //console.log("Meeting details response:", res.data.webinar);
 
         // Handle different start_time formats from backend
+        if (!res.data.message.includes("TWebinar details fetched successfully"))
+          return;
+
         let meetingStartTime: Date;
         const startTimeData = res.data.webinar.startTime;
 
